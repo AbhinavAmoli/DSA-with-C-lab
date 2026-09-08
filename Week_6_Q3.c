@@ -52,7 +52,7 @@ void display(){
 
 void Enqueue(int x){
     if(isFull()){
-        printf("Queue is full\n");
+        printf("Queue is full, cannot insert\n");
         return;
     }
 
@@ -64,14 +64,20 @@ void Enqueue(int x){
     }
 
     queue[rear] = x;
+
+    printf("Enqueued element: %d\n", x);
     display();
 }
 
 void Dequeue(){
+    int item;
+
     if(isEmpty()){
-        printf("Queue is empty\n");
+        printf("Queue is empty, cannot delete\n");
         return;
     }
+
+    item = queue[front];
 
     if(front == rear){
         front = rear = -1;
@@ -80,6 +86,7 @@ void Dequeue(){
         front = (front + 1) % size;
     }
 
+    printf("Dequeued element: %d\n", item);
     display();
 }
 
