@@ -1,74 +1,67 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 
 #define MAX 100
 
 int stack[MAX];
 int top = -1;
 
-void push(int x) {
-    stack[++top] = x;
+void push(int value) {
+    stack[++top] = value;
 }
 
 int pop() {
     return stack[top--];
 }
 
+int isopr(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/';
+}
+
+int applyopr(int a, int b, char op) {
+    if (op == '+') return b + a;
+    if (op == '-') return b - a;
+    if (op == '*') return b * a;
+    return b / a;
+}
+
+int postfix(char exp[]) {
+    int num = 0, read = 0;
+    top = -1;
+
+    for (int i = 0; exp[i] != '\0'; i++) {
+        char c = exp[i];
+
+        if (c >= '0' && c <= '9') {
+            num = num * 10 + (c - '0');
+            read = 1;
+        } else {
+            if (read) {
+                push(num);
+                num = 0;
+                read = 0;
+            }
+
+            if (isopr(c)) {
+                int a = pop();
+                int b = pop();
+                push(applyopr(a, b, c));
+            }
+        }
+    }
+
+    return pop();
+}
+
 int main() {
-    int T;
-    scanf("%d", &T);
+    char exp[MAX];
+    int t;
+
+    scanf("%d", &t);
     getchar();
 
-    while (T--) {
-        char expression[500];
-        fgets(expression, sizeof(expression), stdin);
-
-        top = -1;
-
-        char *token = strtok(expression, " \n");
-
-        while (token != NULL) {
-
-            // If token is a number
-            if (isdigit(token[0]) ||
-                (token[0] == '-' && isdigit(token[1]))) {
-
-                push(atoi(token));
-            }
-
-            // If token is an operator
-            else {
-                int b = pop();
-                int a = pop();
-                int result;
-
-                switch (token[0]) {
-                    case '+':
-                        result = a + b;
-                        break;
-
-                    case '-':
-                        result = a - b;
-                        break;
-
-                    case '*':
-                        result = a * b;
-                        break;
-
-                    case '/':
-                        result = a / b;
-                        break;
-                }
-
-                push(result);
-            }
-
-            token = strtok(NULL, " \n");
-        }
-
-        printf("%d\n", pop());
+    while (t--) {
+        fgets(exp, MAX, stdin);
+        printf("%d\n", postfix(exp));
     }
 
     return 0;
